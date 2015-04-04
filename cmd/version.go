@@ -4,7 +4,7 @@ import "github.com/codegangsta/cli"
 
 var Version = cli.Command{
 	Name:   "version",
-	Usage:  "print version.",
+	Usage:  "print version",
 	Action: doVersion,
 }
 

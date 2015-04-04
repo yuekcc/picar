@@ -9,14 +9,14 @@ import (
 
 var Rename = cli.Command{
 	Name:        "rename",
-	Usage:       "rename photos.",
+	Usage:       "rename (and archive) photos",
 	Description: "command rename [command options] PATH_OF_PHOTOS",
 	Action:      doRename,
 	Flags: []cli.Flag{
-		cli.StringFlag{"prefix", "", "prefix of new file name.", ""},
+		cli.StringFlag{"prefix", "", "prefix of new file name", ""},
 		//cli.StringFlag{"path", "./", "working folder of photos.", ""},
-		cli.BoolFlag{"noarchiving", "no archiving.", ""},
-		cli.BoolFlag{"debug", "run in debug mode.", ""},
+		cli.BoolFlag{"noarchiving", "no archiving", ""},
+		cli.BoolFlag{"debug", "run in debug mode", ""},
 	},
 }
 
