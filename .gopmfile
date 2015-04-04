@@ -1,0 +1,7 @@
+[deps]
+github.com/Sirupsen/logrus = commit:3fc34d061b
+github.com/rwcarlsen/goexif = commit:07696a806c
+
+[res]
+include = 
+
