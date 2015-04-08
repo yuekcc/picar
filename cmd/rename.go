@@ -29,10 +29,10 @@ func doRename(c *cli.Context) {
 	}
 
 	prefix := c.String("prefix")
-	noarchving := c.Bool("noarchiving")
+	noarchiving := c.Bool("noarchiving")
 	debug := c.Bool("debug")
 
-	picar := core.NewPicar(path, prefix, noarchving, debug)
+	picar := core.NewPicar(path, prefix, noarchiving, debug)
 	err := picar.Parse()
 
 	if err != nil {
