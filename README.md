@@ -16,7 +16,7 @@
 
 3. Windows 下有一个简单的图形壳，只在 XP 上测试过。 
 4. 使用 [Gopm][0] 包管理工具。原因你懂的。
-5. [PLANNING]将来会有一个 webui。
+5. 有一个简单的 webui。
 
 ## 命令行参数
 
@@ -58,6 +58,11 @@ WTFPL，详见LICENSE文件。
 * 分级 LOG 库：[Sirupsen/logrus][3]
 * [AutoHotKey][4]
 * 命令行处理库：[codegangsta/cli][5]
+
+## to-do
+
+- 完善输出的信息
+- 可以处理视频文件
 
 [0]: http://gopm.io/
 [1]: http://www.codesnippet.cn/detail/160420132830.html
