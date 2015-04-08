@@ -112,10 +112,10 @@ const view_main =`<!doctype html>
         		<label for="prefix"><h4>前缀</h4></label>
         		<input id="prefix" name="prefix" type="text">
 
-                <input id="noarchiving" name="noarchiving" type="checkbox" checked="true">
+                <input id="noarchiving" name="noarchiving" type="checkbox">
                 <label for="noarchiving">取消归档</label>
 
-                <input id="debug" name="debug" type="checkbox" checked="true">
+                <input id="debug" name="debug" type="checkbox">
                 <label for="debug">调试模式</label>
         	</fieldset>
         	<fieldset class="buttons">

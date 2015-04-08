@@ -22,6 +22,12 @@ func NewPicar(path string, prefix string, noarch bool, debug bool) *Picar {
 		log.SetLevel(log.DebugLevel)
 	}
 
+	log.Debug("GOT PARAMETERS:")
+	log.Debug("\tPATH = ", path)
+	log.Debug("\tPREFIX = ", prefix)
+	log.Debug("\tNO ARCHIVING = ", noarch)
+	log.Debug("\tDEBUG MODE = ", debug)
+
 	return &Picar{
 		path:   path,
 		prefix: prefix,
