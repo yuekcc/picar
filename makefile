@@ -1,4 +1,5 @@
 all:
+	./buildres
 	go build
 
 get:
