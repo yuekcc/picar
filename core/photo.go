@@ -22,7 +22,7 @@ type Photo struct {
 
 func NewPhoto(file string) *Photo {
 	// for debug
-	log.Debug("PARSEING FILE: ", file)
+	//log.Debug("PARSEING FILE: ", file)
 
 	return &Photo{
 		Name:  filepath.Base(file),
@@ -34,25 +34,29 @@ func NewPhoto(file string) *Photo {
 }
 func (self *Photo) GenName(prefix string) error {
 
-	log.Debug("GEN_NEW_NAME OF FILE: ", self.file)
+	log.Debug("\t- GENERRATE NEW FILE NAME OF FILE: ")
+	log.Debug("\t\t| ", self.file)
 
 	jpgfile, err := os.Open(self.file)
 	defer jpgfile.Close()
 
 	if err != nil {
-		log.Debug("\t- OS.OPEN ERROR")
+		log.Debug("\t-! OS.OPEN ERROR: ")
+		log.Debug("\t\t", err)
 		return err
 	}
 
 	exifdata, err := exif.Decode(jpgfile)
 	if err != nil {
-		log.Debug("\t- GOT A EXIF_DECODE ERROR: ", err)
+		log.Debug("\t-! GOT A EXIF_DECODE ERROR: ")
+		log.Debug("\t\t", err)
 		return err
 	}
 
 	dt, err := exifdata.DateTime()
 	if err != nil {
-		log.Debug("\t- GETTING DATETIME ERROR: ", err)
+		log.Debug("\t-! GETTING DATETIME ERROR: ")
+		log.Debug("\t\t", err)
 		return err
 	}
 

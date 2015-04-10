@@ -22,11 +22,11 @@ func NewPicar(path string, prefix string, noarch bool, debug bool) *Picar {
 		log.SetLevel(log.DebugLevel)
 	}
 
-	log.Debug("GOT PARAMETERS:")
-	log.Debug("\tPATH = ", path)
-	log.Debug("\tPREFIX = ", prefix)
-	log.Debug("\tNO ARCHIVING = ", noarch)
-	log.Debug("\tDEBUG MODE = ", debug)
+	log.Info("GOT PARAMETERS:")
+	log.Info("\t- PATH = ", path)
+	log.Info("\t- PREFIX = ", prefix)
+	log.Info("\t- NO ARCHIVING = ", noarch)
+	log.Info("\t- DEBUG MODE = ", debug)
 
 	return &Picar{
 		path:   path,
@@ -37,42 +37,41 @@ func NewPicar(path string, prefix string, noarch bool, debug bool) *Picar {
 
 func (self *Picar) Parse() error {
 
-	log.Debug("PARSING FILES.")
-	log.Debug("FIG 1 STARTED.")
+	log.Debug("STAGE 1 STARTED.")
 
 	err := self.getFileList()
 	if err != nil {
 		return err
 	}
 
-	log.Debug("FIG 1 DONE.")
+	log.Debug("STAGE 1 DONE.")
 
 	ch := make(chan int)
 
 	index := 0
-	log.Debug("FIG 2 STARTED.")
+	log.Debug("STAGE 2 STARTED.")
 	for _, file := range self.filelist {
 		ext := filepath.Ext(file)
 		switch ext {
 		case ".jpg":
-			log.Debug("\tGET A JPG: ", file)
+			log.Debug("\t- GET A JPG: ", file)
 			index++
-			abspath, _ := filepath.Abs(file)
-			go self.do(abspath, ch)
+			//abspath, _ := filepath.Abs(file)
+			go self.do(file, ch)
 		case ".mp4":
-			log.Debug("\tGET A MOV: ", file)
-			log.Debug("\tDO NOTHING.")
+			log.Debug("\t- GET A MOV: ", file)
+			//log.Debug("\t- DO NOTHING.")
 		default:
-			log.Debug("\tIGNORE FILE: ", file)
+			log.Debug("\t- IGNORE FILE: ", file)
 		}
 	}
 
 	for i := 0; i < index; i++ {
 		<-ch
 	}
-
-	log.Debug("FIG 2 DONE.")
-
+	log.Debug("PARSED ", index, " FILES.")
+	log.Debug("STAGE 2 DONE.")
+	log.Info("DONE.")
 	return nil
 }
 
@@ -88,7 +87,7 @@ func (self *Picar) getFileList() (err error) {
 	}
 
 	for _, item := range items {
-		log.Debug("\tGET A ITEM: ", item.Name())
+		log.Debug("\t- GET A ITEM: ", item.Name())
 
 		// 忽略子目录
 		if item.IsDir() {
@@ -107,7 +106,8 @@ func (self *Picar) getFileList() (err error) {
 
 // fig.2
 func (self *Picar) do(file string, ch chan int) {
-	log.Debug("\tRENAMEING FILE: ", file)
+	log.Debug("STAGE 2/RENAME STARTED.")
+	log.Debug("\t- PARSING FILE: ", file)
 
 	newfullpath := ""
 	photo := NewPhoto(file)
@@ -124,7 +124,7 @@ func (self *Picar) do(file string, ch chan int) {
 		os.MkdirAll(filepath.Join(photo.Path, photo.Archdir), 0777)
 	}
 
-	log.Debug("\tNEW FILE NAME: ", newfullpath)
+	log.Debug("\t- SET TO: ", newfullpath)
 
 	err = os.Rename(file, newfullpath)
 	if err != nil {
@@ -132,5 +132,6 @@ func (self *Picar) do(file string, ch chan int) {
 		return
 	}
 
+	log.Debug("STAGE 2/RENAME DONE.")
 	ch <- 1
 }
