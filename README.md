@@ -14,9 +14,8 @@
 
     比如： IMG_20140401.jpg => 201504/PREFIX_20150401_111111.jpg
 
-3. Windows 下有一个简单的图形壳，只在 XP 上测试过。 
-4. 使用 [Gopm][0] 包管理工具。原因你懂的。
-5. 有一个简单的 webui。
+3. 使用 [Gopm][0] 包管理工具。原因你懂的。
+4. 有一个简单的 webui。
 
 ## 命令行参数
 
@@ -63,6 +62,7 @@ WTFPL，详见LICENSE文件。
 
 - 完善输出的信息
 - 可以处理视频文件
+- 为 windows 平台加入一个简单的 GUI 壳
 
 [0]: http://gopm.io/
 [1]: http://www.codesnippet.cn/detail/160420132830.html
