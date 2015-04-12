@@ -1,12 +1,17 @@
-all:
+resouce:
 	./buildres
-	go build
 
 get:
 	gopm get -v -g
 
-release:
+all: resouce
+	go build
+
+release: resouce
 	go build -ldflags -w
+
+install: resouce
+	go install
 
 clean:
 	rm -f picar
