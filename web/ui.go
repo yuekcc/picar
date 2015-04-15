@@ -1,8 +1,10 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
 	"picar/core"
+	"picar/web/assets"
 
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
@@ -34,12 +36,13 @@ func UI(port string) {
 }
 
 func hello(c *echo.Context) {
-	c.HTMLString(http.StatusOK, TEMPLATES["view_main"])
+	c.HTMLString(http.StatusOK, assets.ReadFile("main.html"))
 }
 
 func call(c *echo.Context) {
-	path := checkStr(c.Request.FormValue("path"), "./")
-	prefix := checkStr(c.Request.FormValue("prefix"), "")
+
+	path := checkEmptyStr(c.Request.FormValue("path"), "./")
+	prefix := checkEmptyStr(c.Request.FormValue("prefix"), "")
 	noarchiving := checkBool(c.Request.FormValue("noarchiving"))
 	debug := checkBool(c.Request.FormValue("debug"))
 
@@ -47,35 +50,19 @@ func call(c *echo.Context) {
 	err := picar.Parse()
 
 	if err != nil {
-		c.JSON(http.StatusOK, &msg{
-			Code:    500,
-			Message: "Got a error. please retry with debug mode.",
+		c.JSON(http.StatusInternalServerError, &msg{
+			Code:    http.StatusInternalServerError,
+			Message: fmt.Sprintf("出错，请尝试调试模式\n%s", err),
 		})
 	}
 
 	c.JSON(http.StatusOK, &msg{
 		Code:    200,
-		Message: "DONE.",
+		Message: "完成",
 	})
-	/*
-		// for debug -start
-		type r struct {
-			Path        string
-			Prefix      string
-			Noarchiving bool
-			Debug       bool
-		}
-		c.JSON(http.StatusOK, &r{
-			Path:        path,
-			Prefix:      prefix,
-			Noarchiving: noarchiving,
-			Debug:       debug,
-		})
-		// for debug -end
-	*/
 }
 
-func checkStr(in string, d string) string {
+func checkEmptyStr(in string, d string) string {
 	if in == "" {
 		return d
 	} else {
