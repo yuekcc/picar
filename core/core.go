@@ -1,6 +1,7 @@
 package core
 
 import (
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -13,6 +14,7 @@ type Picar struct {
 	prefix   string
 	noarch   bool
 	filelist []string
+	debug    bool
 }
 
 func NewPicar(path string, prefix string, noarch bool, debug bool) *Picar {
@@ -22,7 +24,7 @@ func NewPicar(path string, prefix string, noarch bool, debug bool) *Picar {
 		log.SetLevel(log.DebugLevel)
 	}
 
-	log.Info("GOT PARAMETERS:")
+	log.Info("参数列表：")
 	log.Info("\t- PATH = ", path)
 	log.Info("\t- PREFIX = ", prefix)
 	log.Info("\t- NO ARCHIVING = ", noarch)
@@ -32,54 +34,60 @@ func NewPicar(path string, prefix string, noarch bool, debug bool) *Picar {
 		path:   path,
 		prefix: prefix,
 		noarch: noarch,
+		debug:  debug,
 	}
+}
+
+func (self *Picar) SetOutput(out io.Writer) {
+	log.SetOutput(out)
+	log.SetFormatter(new(logFormatter))
 }
 
 func (self *Picar) Parse() error {
 
-	log.Debug("STAGE 1 STARTED.")
+	log.Debug("STAGE 1 获取文件列表")
 
 	err := self.getFileList()
 	if err != nil {
 		return err
 	}
 
-	log.Debug("STAGE 1 DONE.")
+	log.Debug("STAGE 1 完成")
 
 	ch := make(chan int)
 
 	index := 0
-	log.Debug("STAGE 2 STARTED.")
+	log.Debug("STAGE 2 过滤照片文件")
 	for _, file := range self.filelist {
 		ext := filepath.Ext(file)
 		switch ext {
 		case ".jpg":
-			log.Debug("\t- GET A JPG: ", file)
+			log.Debug("\t- 照片: ", file)
 			index++
 			//abspath, _ := filepath.Abs(file)
 			go self.do(file, ch)
 		case ".mp4":
-			log.Debug("\t- GET A MOV: ", file)
+			log.Debug("\t- 影片: ", file)
 			//log.Debug("\t- DO NOTHING.")
 		default:
-			log.Debug("\t- IGNORE FILE: ", file)
+			log.Debug("\t- 忽略: ", file)
 		}
 	}
 
 	for i := 0; i < index; i++ {
 		<-ch
 	}
-	log.Debug("PARSED ", index, " FILES.")
-	log.Debug("STAGE 2 DONE.")
-	log.Info("DONE.")
+	log.Debug("一共处理了 ", index, " 个文件")
+	log.Debug("STAGE 2 完成")
+	log.Info("完成")
 	return nil
 }
 
 // 取得文件列表
-// fig.1
+//
 func (self *Picar) getFileList() (err error) {
 
-	log.Debug("READING DIR: ", self.path)
+	log.Debug("读取目录：", self.path)
 
 	items, err := ioutil.ReadDir(self.path)
 	if err != nil {
@@ -87,7 +95,7 @@ func (self *Picar) getFileList() (err error) {
 	}
 
 	for _, item := range items {
-		log.Debug("\t- GET A ITEM: ", item.Name())
+		//log.Debug("\t- GET A ITEM: ", item.Name())
 
 		// 忽略子目录
 		if item.IsDir() {
@@ -104,10 +112,13 @@ func (self *Picar) getFileList() (err error) {
 	return nil // 操作成功就没有 err 了，err = nil。!!!-_-
 }
 
-// fig.2
+// 重命名（和归档）照片
+// 原理：
+//	如果需要归档照片，则生成新文件名时，加上要放置的目录
+//	然后，将照片重新命名为新文件名
+//
 func (self *Picar) do(file string, ch chan int) {
-	log.Debug("STAGE 2/RENAME STARTED.")
-	log.Debug("\t- PARSING FILE: ", file)
+	log.Debug("\t- 正在处理：", file)
 
 	newfullpath := ""
 	photo := NewPhoto(file)
@@ -117,21 +128,25 @@ func (self *Picar) do(file string, ch chan int) {
 		return
 	}
 
+	// 如果使用了 noarch 标记
 	if self.noarch {
+		// 不归档照片
 		newfullpath = filepath.Join(photo.Path, photo.Newname)
 	} else {
+		// 归档照片
 		newfullpath = filepath.Join(photo.Path, photo.Archdir, photo.Newname)
 		os.MkdirAll(filepath.Join(photo.Path, photo.Archdir), 0777)
 	}
 
-	log.Debug("\t- SET TO: ", newfullpath)
+	log.Debug("\t- 重命名为：", newfullpath)
 
+	// 重命名照片
+	// 相当于 shell mv src dest
 	err = os.Rename(file, newfullpath)
 	if err != nil {
 		ch <- 1
 		return
 	}
 
-	log.Debug("STAGE 2/RENAME DONE.")
 	ch <- 1
 }

@@ -1,3 +1,8 @@
+/*
+命令行参数：启动 webui
+使用：picar webui --port <ip:port>
+*/
+
 package cmd
 
 import (
@@ -18,6 +23,6 @@ var Webui = cli.Command{
 
 func doWebui(c *cli.Context) {
 	port := c.String("port")
-	fmt.Printf("Start Server on http://localhost%s/\n", port)
+	fmt.Printf("Start Web UI on http://localhost%s/\n", port)
 	web.UI(port)
 }

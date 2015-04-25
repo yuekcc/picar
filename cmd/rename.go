@@ -1,3 +1,8 @@
+/*
+命令行参数：重命名照片
+使用：picar rename [--prefix <prefix>] [--noarchiving] [--debug] <path=./>
+*/
+
 package cmd
 
 import (
@@ -22,8 +27,9 @@ var Rename = cli.Command{
 
 func doRename(c *cli.Context) {
 
-	path := c.Args().First()
+	path := c.Args().First() // 只处理第一个目录
 
+	// 照片的路径，默认为当前目录
 	if path == "" {
 		path = "./"
 	}
@@ -38,5 +44,4 @@ func doRename(c *cli.Context) {
 	if err != nil {
 		os.Exit(1)
 	}
-	os.Exit(0)
 }

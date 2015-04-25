@@ -1,14 +1,14 @@
-resouce:
-	./buildres
+all: bifs
+	go build
+
+bifs:
+	cd web/assets && make
 
 get:
 	gopm get -v -g
 
-all: resouce
-	go build
-
-release: resouce
-	go build -ldflags -w
+test:
+	./picar webui
 
 install: resouce
 	go install

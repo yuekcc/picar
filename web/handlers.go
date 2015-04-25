@@ -6,10 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"picar/core"
 	"picar/web/assets"
-	"strconv"
 
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo"
@@ -31,44 +29,15 @@ func hello(c *echo.Context) {
 	c.HTMLString(http.StatusOK, assets.ReadFile("main.html"))
 }
 
-// 调用 picar
+// 建立 websocket 连接
+// 通用 websocket 进行 RPC
 //
-func call(c *echo.Context) {
-
-	// 处理 picar 参数
-	path := emptyStr(c.Request.FormValue("path"), "./")
-	prefix := emptyStr(c.Request.FormValue("prefix"), "")
-	noarchiving, _ := strconv.ParseBool(c.Request.FormValue("noarchiving"))
-	debug, _ := strconv.ParseBool(c.Request.FormValue("debug"))
-
-	// 调用 picar
-	picar := core.NewPicar(path, prefix, noarchiving, debug)
-
-	logfile, _ := os.Create("picar.log")
-	defer logfile.Close()
-
-	picar.SetOutput(logfile)
-	err := picar.Parse()
-	// 出错
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, &msg{
-			Code:    http.StatusInternalServerError,
-			Message: fmt.Sprintf("出错啦！请尝试「调试模式」\n%s", err),
-		})
-	}
-
-	// 成功
-	c.JSON(http.StatusOK, &msg{
-		Code:    200,
-		Message: "完成",
-	})
-}
-
 func wsConn(c *echo.Context) {
 	var upgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
+	// 将普通 HTTP-Handler 升级为 webscoket
 	conn, _ := upgrader.Upgrade(c.Response.ResponseWriter, c.Request, nil)
 	defer conn.Close()
 	for {
@@ -77,7 +46,7 @@ func wsConn(c *echo.Context) {
 			continue
 		}
 
-		fmt.Printf("GOT -> %v, %s\n", messageType, p)
+		fmt.Printf("WS GET -> %v, %s\n", messageType, p)
 
 		// 将输出写入 websocket 中
 		var buf bytes.Buffer

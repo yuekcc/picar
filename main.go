@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	VERSION = "13.1"
+	VERSION = "13.2"
 )
 
 func main() {
@@ -19,8 +19,8 @@ func main() {
 	app.Version = VERSION
 	app.Commands = []cli.Command{
 		cmd.Version,
-		cmd.Rename,
-		cmd.Webui,
+		cmd.Rename, // 命令行
+		cmd.Webui,  // web-ui
 	}
 	app.Run(os.Args)
 }

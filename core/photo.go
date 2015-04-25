@@ -21,9 +21,6 @@ type Photo struct {
 }
 
 func NewPhoto(file string) *Photo {
-	// for debug
-	//log.Debug("PARSEING FILE: ", file)
-
 	return &Photo{
 		Name:  filepath.Base(file),
 		Ext:   filepath.Ext(file),
@@ -32,10 +29,9 @@ func NewPhoto(file string) *Photo {
 		file:  file,
 	}
 }
-func (self *Photo) GenName(prefix string) error {
 
-	log.Debug("\t- GENERRATE NEW FILE NAME OF FILE: ")
-	log.Debug("\t\t| ", self.file)
+func (self *Photo) GenName(prefix string) error {
+	log.Debug("\t- 生成新文件名：", self.file)
 
 	jpgfile, err := os.Open(self.file)
 	defer jpgfile.Close()
@@ -48,7 +44,7 @@ func (self *Photo) GenName(prefix string) error {
 
 	exifdata, err := exif.Decode(jpgfile)
 	if err != nil {
-		log.Debug("\t-! GOT A EXIF_DECODE ERROR: ")
+		log.Debug("\t-! EXIF_DECODE ERROR: ")
 		log.Debug("\t\t", err)
 		return err
 	}

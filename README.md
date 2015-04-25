@@ -53,13 +53,14 @@ WTFPL，详见LICENSE文件。
 
 ## 安装
 
-安装 picar 前请先安装 [gopm](https://github.com/gpmgo/gopm)。
+安装 picar 前请先安装 [gopm][6] 和 [mkbifs][7]。
 
 ```
 # cd $PATH_TO_GOPATH
 $ git clone https://git.coding.net/yuekcc/picar.git
 $ make get
-$ makg install
+$ make
+$ make install
 ```
 
 ## 致谢
@@ -74,9 +75,13 @@ $ makg install
 - 完善输出的信息
 - 可以处理视频文件
 - 为 windows 平台加入一个简单的 GUI 壳
+- 多国语言如何？
+- webui 路径自动提示？
 
 [0]: http://gopm.io/
 [1]: http://www.codesnippet.cn/detail/160420132830.html
 [2]: https://github.com/rwcarlsen/goexif
 [3]: https://github.com/Sirupsen/logrus
 [5]: https://github.com/codegangsta/cli
+[6]: https://github.com/gpmgo/gopm
+[7]: https://coding.net/u/yuekcc/p/mkbifs/git
