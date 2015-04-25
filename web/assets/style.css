@@ -19,7 +19,7 @@
 
 .main-box {
 	margin: auto;
-	width: 500px;
+	width: 50vw;
 	padding: 2em;
 	border: 1px;
 	border-style: solid;
@@ -49,4 +49,10 @@ button {
 fieldset.buttons {
 	text-align: right;
 	margin: 1em 0;
+}
+
+#tty {
+	margin-top: 10px;
+	line-height: 1.5;
+	border-width: 1px;
 }
