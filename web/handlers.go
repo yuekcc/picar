@@ -19,14 +19,14 @@ func assetsHandler(c *echo.Context) {
 	resName := c.Param("name")
 
 	res := assets.Open(resName)
-	c.Response.ResponseWriter.Header().Set("Content-Type", res.MIME())
-	c.Response.ResponseWriter.Write([]byte(res.ReadAll()))
+	c.Response().Header().Set("Content-Type", res.MIME())
+	c.Response().Write([]byte(res.ReadAll()))
 }
 
 // 显示首页
 //
 func hello(c *echo.Context) {
-	c.HTMLString(http.StatusOK, assets.ReadFile("main.html"))
+	c.HTML(http.StatusOK, assets.ReadFile("main.html"))
 }
 
 // 建立 websocket 连接
@@ -38,7 +38,7 @@ func wsConn(c *echo.Context) {
 		WriteBufferSize: 1024,
 	}
 	// 将普通 HTTP-Handler 升级为 webscoket
-	conn, _ := upgrader.Upgrade(c.Response.ResponseWriter, c.Request, nil)
+	conn, _ := upgrader.Upgrade(c.Response().Writer(), c.Request(), nil)
 	defer conn.Close()
 	for {
 		messageType, p, err := conn.ReadMessage()
