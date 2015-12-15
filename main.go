@@ -1,26 +1,34 @@
 package main
 
 import (
-	"os"
-	"picar/cmd"
-
-	"github.com/codegangsta/cli"
+	"flag"
+	"log"
 )
 
-const (
-	VERSION = "13.2"
+var (
+	flagPrefix     string
+	flagRenameOnly bool
 )
+
+func init() {
+	flag.StringVar(&flagPrefix, "prefix", "", "设置文件名的前缀")
+	flag.BoolVar(&flagRenameOnly, "renameonly", false, "只重命名文件名")
+}
 
 func main() {
-	app := cli.NewApp()
-	app.Name = "picar"
-	app.Usage = "A photos rename and archive tool"
-	app.Author = "Yuekcc <yuekcc@qq.com>"
-	app.Version = VERSION
-	app.Commands = []cli.Command{
-		cmd.Version,
-		cmd.Rename, // 命令行
-		cmd.Webui,  // web-ui
+	flag.Parse()
+
+	log.Println("picar, a tool for rename and archiving photos.")
+	log.Println("version", _VESION)
+
+	picar(flagPrefix, flagRenameOnly, flag.Args()...)
+}
+
+func picar(prefix string, renameOnly bool, path ...string) {
+	log.Printf("%v, %v, %v", prefix, renameOnly, path)
+
+	for _, dir := range path {
+		log.Println(dir)
 	}
-	app.Run(os.Args)
+
 }
