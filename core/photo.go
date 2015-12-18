@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -30,11 +31,14 @@ func NewPhoto(file string) *Photo {
 }
 
 func (self *Photo) GenName(prefix string) error {
+	var dtsplited []string
 	dtsplited, err := genNameFromExif(self.fullpath)
 	if err != nil {
-		return err
+		log.Println(err)
+		dtsplited, _ = getNameFromFilename(self.fullpath)
 	}
-	// to-do：没有考虑连拍的情况
+
+	// TODO 考虑连拍的情况
 	if prefix == "" {
 		self.NewFilename = fmt.Sprintf("%s-%s%s", dtsplited[0], dtsplited[1], self.Ext)
 	} else {
@@ -67,6 +71,31 @@ func genNameFromExif(jpeg string) ([]string, error) {
 	return dtsplited, nil
 }
 
+// 名字例如：IMG_20151106_212111
+//
 func getNameFromFilename(jpeg string) ([]string, error) {
-	return nil, nil
+	nameStr := filepath.Base(jpeg)
+	name := strings.Split(nameStr, ".")
+	str := strings.ToUpper(name[0])
+
+	spSet := []string{"_", "-", " "}
+
+	var dateStr string
+	var timeStr string
+
+	for _, sp := range spSet {
+		if strings.Contains(str, sp) {
+			substr := strings.Split(str, sp)
+			size := len(substr)
+			if size == 3 {
+				dateStr = substr[1]
+				timeStr = substr[2]
+			} else {
+				dateStr = substr[0]
+				timeStr = substr[1]
+			}
+			break
+		}
+	}
+	return []string{dateStr, timeStr}, nil
 }

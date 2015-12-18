@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"log"
+	"os"
 )
 
 var (
@@ -26,6 +27,11 @@ func main() {
 
 func picar(prefix string, renameOnly bool, path ...string) {
 	log.Printf("%v, %v, %v", prefix, renameOnly, path)
+
+	if len(path) == 0 {
+		pwd, _ := os.Getwd()
+		path = []string{pwd}
+	}
 
 	for _, dir := range path {
 		log.Println(dir)

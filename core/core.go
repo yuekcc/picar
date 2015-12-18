@@ -67,17 +67,13 @@ func (self *Picar) getFileList() (err error) {
 	}
 
 	for _, item := range items {
-		//log.Println("\t- GET A ITEM: ", item.Name())
 
 		// 忽略子目录
 		if item.IsDir() {
-			//log.Println("\t\t", item.Name(), "IS DIR! PASSED.")
 			continue
 		}
 
 		file := filepath.Join(self.path, item.Name())
-
-		//log.Println("\t\tGET A FILE: ", file)
 
 		self.filelist = append(self.filelist, file)
 	}
