@@ -2,8 +2,10 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
+	"picar/core"
 )
 
 var (
@@ -19,6 +21,11 @@ func init() {
 func main() {
 	flag.Parse()
 
+	if flag.NFlag() == 0 {
+		printHelp()
+		return
+	}
+
 	log.Println("picar, a tool for rename and archiving photos.")
 	log.Println("version", _VESION)
 
@@ -26,7 +33,7 @@ func main() {
 }
 
 func picar(prefix string, renameOnly bool, path ...string) {
-	log.Printf("%v, %v, %v", prefix, renameOnly, path)
+	log.Printf("prefix = %v, renameOnly = %v, path = %v", prefix, renameOnly, path)
 
 	if len(path) == 0 {
 		pwd, _ := os.Getwd()
@@ -34,7 +41,16 @@ func picar(prefix string, renameOnly bool, path ...string) {
 	}
 
 	for _, dir := range path {
-		log.Println(dir)
+		log.Println("正在处理目录", dir)
+		parser := core.NewParser(prefix, renameOnly, dir)
+		err := parser.Parse()
+		if err != nil {
+			log.Println(err)
+		}
 	}
+}
 
+func printHelp() {
+	fmt.Println("使用方法：picar -perfix PREFIX [-renameonly] [path1, path2, ...]")
+	flag.PrintDefaults()
 }

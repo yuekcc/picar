@@ -2,7 +2,6 @@ package core
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -34,7 +33,7 @@ func (self *Photo) GenName(prefix string) error {
 	var dtsplited []string
 	dtsplited, err := genNameFromExif(self.fullpath)
 	if err != nil {
-		log.Println(err)
+		//log.Println(err)
 		dtsplited, _ = getNameFromFilename(self.fullpath)
 	}
 

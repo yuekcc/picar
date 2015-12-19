@@ -14,7 +14,7 @@ type Picar struct {
 	filelist   []string
 }
 
-func NewPicar(path string, prefix string, renameOnly bool) *Picar {
+func NewParser(prefix string, renameOnly bool, path string) *Picar {
 	return &Picar{
 		path:       path,
 		prefix:     prefix,
