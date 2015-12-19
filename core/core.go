@@ -97,7 +97,6 @@ func (self *Picar) do(file string, done chan bool) {
 		return
 	}
 
-	// 如果使用了 noarch 标记
 	if self.renameOnly {
 		// 不归档照片
 		newfullpath = filepath.Join(photo.Path, photo.NewFilename)
@@ -110,7 +109,6 @@ func (self *Picar) do(file string, done chan bool) {
 	log.Println("\t- 重命名为：", newfullpath)
 
 	// 重命名照片
-	// 相当于 shell mv src dest
 	err = os.Rename(file, newfullpath)
 	if err != nil {
 		done <- true
