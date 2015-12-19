@@ -5,7 +5,7 @@
 
 注意：
 
-- 目前只在 Windows 7 64bit 上测试过。
+- 目前只在 Windows 7 64 位上测试过。
 - 得益于 Golang 的特性，理论上也支持 OSX/Linux/*BSD/Plan9。
 
 ## 功能
@@ -15,6 +15,8 @@
 
 	比如：
 	IMG_20151106_212111.jpg => 201511/PREFIX_20150401_111111.jpg
+
+3. Windows 上有一个简单的 AutoHotKey 图形 Shell（ gui.exe）
 
 ## 使用
 
@@ -50,7 +52,7 @@ $ go build
 
 ## TODO
 
-- [x] 完善输出的信息
+- [ ] 可以处理连拍的照片
 - [ ] 可以处理视频文件
 
 [1]: http://www.codesnippet.cn/detail/160420132830.html
