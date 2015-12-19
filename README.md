@@ -34,7 +34,7 @@ $ picar 命令 [命令选项] [目录 1] [目录 2] ...
 
 ### License
 
-WTFPL，详见LICENSE文件。
+WTFPL，详见 LICENSE 文件。
 
 ## 安装
 
@@ -53,6 +53,5 @@ $ go build
 - [x] 完善输出的信息
 - [ ] 可以处理视频文件
 
-[0]: http://gopm.io/
 [1]: http://www.codesnippet.cn/detail/160420132830.html
 [2]: https://github.com/rwcarlsen/goexif
