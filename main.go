@@ -27,7 +27,8 @@ func main() {
 	}
 
 	log.Println("picar, a tool for rename and archiving photos.")
-	log.Println("version", _VESION)
+	log.Println("version", _VERSION)
+	log.Println("a tool from yuekcc, build with love.")
 
 	picar(flagPrefix, flagRenameOnly, flag.Args()...)
 }
