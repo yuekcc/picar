@@ -86,6 +86,14 @@ func (self *Picar) getFileList() (err error) {
 // 然后，将照片重新命名为新文件名
 //
 func (self *Picar) do(file string, done chan bool) {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Println(err)
+			done <- true
+			return
+		}
+	}()
+
 	log.Println("\t- 正在处理：", file)
 
 	newfullpath := ""
