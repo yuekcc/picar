@@ -5,7 +5,8 @@
 注意：
 
 - 目前只在 Windows 7 64 位上测试过。
-- 得益于 Golang 的特性，理论上也支持 OSX/Linux/*BSD/Plan9。
+-  需要 Go 1.5+ 版本编译，因为使用了 [vendor][4] 特性。
+- 得益于 Go 的功能，理论上也支持 maxOS、*Linux、*BSD、Plan9。
 
 ## 功能
 
@@ -15,7 +16,7 @@
 	比如：
 	IMG_20151106_212111.jpg => 201511/PREFIX_20150401_111111.jpg
 
-3. Windows 上有一个简单的 AutoHotKey 图形 Shell（ gui.exe）
+3. Windows 上有一个简单的 [AArdio][5] 写的图形界面，代码在 [aardio 目录][6]。
 
 ## 使用
 
@@ -36,7 +37,7 @@ $ picar 命令 [命令选项] [目录 1] [目录 2] ...
 
 ### License
 
-WTFPL，详见 LICENSE 文件。
+WTFPL，详见 [LICENSE][3] 文件。
 
 ## 安装
 
@@ -57,3 +58,7 @@ $ go build
 
 [1]: http://www.codesnippet.cn/detail/160420132830.html
 [2]: https://github.com/rwcarlsen/goexif
+[3]: https://coding.net/u/yuekcc/p/picar/git/blob/master/LICENSE
+[4]: http://tonybai.com/2015/07/31/understand-go15-vendor/
+[5]: http://www.aardio.com/
+[6]: https://coding.net/u/yuekcc/p/picar/git/tree/master/aardio
