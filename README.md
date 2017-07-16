@@ -40,7 +40,7 @@ WTFPL，详见 LICENSE 文件。
 ## 安装
 
 ```
-$ git clone https://git.coding.net/yuekcc/picar.git $GOPATH/picar
+$ git clone https://git.coding.net/yuekcc/picar.git $GOPATH/src/picar
 $ go build
 ```
 
