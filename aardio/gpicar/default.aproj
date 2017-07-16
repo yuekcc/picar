@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project ver="10" name="gpicar" libEmbed="true" icon="..." ui="win" output="gpicar.exe" CompanyName="catqx.com" FileDescription="gpicar" LegalCopyright="Copyright (C) yuekcc 2017" ProductName="gpicar" InternalName="gpicar" FileVersion="0.1.0.16" ProductVersion="0.1.0.16" publishDir="/Publish/" dstrip="false">
+	<file name="main.aardio" path="main.aardio" comment="main.aardio"/>
+	<folder name="资源文件" path="res" embed="true"/>
+</project>
