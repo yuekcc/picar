@@ -1,0 +1,19 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "Q68FxXX04PtPDIG7C1RlSDhx/ko=",
+			"path": "github.com/rwcarlsen/goexif/exif",
+			"revision": "709fab3d192d7c62f86043caff1e7e3fb0f42bd8",
+			"revisionTime": "2015-05-20T14:06:47Z"
+		},
+		{
+			"checksumSHA1": "0+tTLlssYWyGuq+vQs4IiPIXJW4=",
+			"path": "github.com/rwcarlsen/goexif/tiff",
+			"revision": "709fab3d192d7c62f86043caff1e7e3fb0f42bd8",
+			"revisionTime": "2015-05-20T14:06:47Z"
+		}
+	],
+	"rootPath": "picar"
+}
