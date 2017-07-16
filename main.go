@@ -9,13 +9,22 @@ import (
 )
 
 var (
-	flagPrefix     string
-	flagRenameOnly bool
+	flagPrefix      string
+	flagNoArchiving bool
+	flagParseVideos bool
 )
+
+type PicarConfig struct {
+	ParseVideos    bool
+	NoArchiving    bool
+	Prefix         string
+	PicruteFolders []string
+}
 
 func init() {
 	flag.StringVar(&flagPrefix, "prefix", "", "设置文件名的前缀")
-	flag.BoolVar(&flagRenameOnly, "renameonly", false, "只重命名文件名")
+	flag.BoolVar(&flagNoArchiving, "noarchiving", false, "不归档文件")
+	flag.BoolVar(&flagParseVideos, "videos", false, "处理视频文件")
 }
 
 func main() {
@@ -23,6 +32,7 @@ func main() {
 
 	if flag.NFlag() == 0 {
 		printHelp()
+		os.Exit(-1)
 		return
 	}
 
@@ -30,20 +40,28 @@ func main() {
 	log.Println("version", _VERSION)
 	log.Println("a tool from yuekcc, build with love.")
 
-	picar(flagPrefix, flagRenameOnly, flag.Args()...)
-}
-
-func picar(prefix string, renameOnly bool, path ...string) {
-	log.Printf("prefix = %v, renameOnly = %v, path = %v", prefix, renameOnly, path)
-
-	if len(path) == 0 {
-		pwd, _ := os.Getwd()
-		path = []string{pwd}
+	config := PicarConfig{
+		ParseVideos:    flagParseVideos,
+		NoArchiving:    flagNoArchiving,
+		Prefix:         flagPrefix,
+		PicruteFolders: flag.Args(),
 	}
 
-	for _, dir := range path {
+	picar(config)
+}
+
+func picar(config PicarConfig) {
+	log.Printf("prefix = %v, noArchiving = %v, path = %v", config.Prefix, config.NoArchiving, config.PicruteFolders)
+
+	var dirs []string
+	if len(config.PicruteFolders) == 0 {
+		pwd, _ := os.Getwd()
+		dirs = []string{pwd}
+	}
+
+	for _, dir := range dirs {
 		log.Println("正在处理目录", dir)
-		parser := core.NewParser(prefix, renameOnly, dir)
+		parser := core.NewParser(config.Prefix, config.NoArchiving, config.ParseVideos, dir)
 		err := parser.Parse()
 		if err != nil {
 			log.Println(err)
@@ -52,6 +70,6 @@ func picar(prefix string, renameOnly bool, path ...string) {
 }
 
 func printHelp() {
-	fmt.Println("使用方法：picar -perfix PREFIX [-renameonly] [path1, path2, ...]")
+	fmt.Println("使用方法：picar -perfix PREFIX [-noarchiving] [-videos] [path1, path2, ...]")
 	flag.PrintDefaults()
 }

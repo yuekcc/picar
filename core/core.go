@@ -5,21 +5,35 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type Picar struct {
-	path       string
-	prefix     string
-	renameOnly bool
-	filelist   []string
+	path        string
+	prefix      string
+	noArchiving bool
+	parseVideos bool
+	filelist    []string
 }
 
-func NewParser(prefix string, renameOnly bool, path string) *Picar {
+func NewParser(prefix string, noArchiving bool, videos bool, path string) *Picar {
 	return &Picar{
-		path:       path,
-		prefix:     prefix,
-		renameOnly: renameOnly,
+		path:        path,
+		prefix:      prefix,
+		parseVideos: videos,
+		noArchiving: noArchiving,
 	}
+}
+
+func exists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return true, err
 }
 
 func (self *Picar) Parse() error {
@@ -34,12 +48,12 @@ func (self *Picar) Parse() error {
 	index := 0
 	log.Println("过滤照片文件")
 	for _, file := range self.filelist {
-		ext := filepath.Ext(file)
+		ext := strings.ToLower(filepath.Ext(file))
 		switch ext {
 		case ".jpg":
 			log.Println("\t- 照片: ", file)
 			index++
-			go self.do(file, ch)
+			go self.parseImage(file, ch)
 		case ".mp4", ".mov":
 			log.Println("\t- 影片: ", file)
 		default:
@@ -85,7 +99,7 @@ func (self *Picar) getFileList() (err error) {
 // 如果需要归档照片，则生成新文件名时，加上要放置的目录
 // 然后，将照片重新命名为新文件名
 //
-func (self *Picar) do(file string, done chan bool) {
+func (self *Picar) parseImage(file string, done chan bool) {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Println(err)
@@ -99,29 +113,40 @@ func (self *Picar) do(file string, done chan bool) {
 	newfullpath := ""
 	photo := NewPhoto(file)
 
-	err := photo.GenName(self.prefix) //取得新文件名
-	if err != nil {
-		done <- true
-		return
+	for counter := 0; ; counter++ {
+		//取得新文件名
+		err := photo.GenName(self.prefix, counter)
+		if err != nil {
+			done <- true
+			return
+		}
+
+		if self.noArchiving {
+			// 不归档照片
+			newfullpath = filepath.Join(photo.Path, photo.NewFilename)
+		} else {
+			// 归档照片
+			newfullpath = filepath.Join(photo.Path, photo.ArchFolder, photo.NewFilename)
+			os.MkdirAll(filepath.Join(photo.Path, photo.ArchFolder), 0777)
+		}
+
+		log.Println("\t- 重命名为：", newfullpath)
+
+		// 首先检查是否已经储存一样的新文件名的文件
+		found, err := exists(newfullpath)
+		if err != nil {
+			done <- true
+			return
+		}
+
+		if found {
+			continue
+		} else {
+			err = os.Rename(file, newfullpath)
+			if err != nil {
+				done <- true
+				return
+			}
+		}
 	}
-
-	if self.renameOnly {
-		// 不归档照片
-		newfullpath = filepath.Join(photo.Path, photo.NewFilename)
-	} else {
-		// 归档照片
-		newfullpath = filepath.Join(photo.Path, photo.ArchFolder, photo.NewFilename)
-		os.MkdirAll(filepath.Join(photo.Path, photo.ArchFolder), 0777)
-	}
-
-	log.Println("\t- 重命名为：", newfullpath)
-
-	// 重命名照片
-	err = os.Rename(file, newfullpath)
-	if err != nil {
-		done <- true
-		return
-	}
-
-	done <- true
 }

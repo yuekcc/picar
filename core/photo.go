@@ -6,6 +6,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"bytes"
+
+	"strconv"
+
 	exif "github.com/rwcarlsen/goexif/exif"
 )
 
@@ -29,20 +33,28 @@ func NewPhoto(file string) *Photo {
 	}
 }
 
-func (self *Photo) GenName(prefix string) error {
+func (self *Photo) GenName(prefix string, counter int) error {
 	var dtsplited []string
 	dtsplited, err := genNameFromExif(self.fullpath)
 	if err != nil {
 		dtsplited, _ = getNameFromFilename(self.fullpath)
 	}
 
-	// TODO 考虑连拍的情况
-	if prefix == "" {
-		self.NewFilename = fmt.Sprintf("%s-%s%s", dtsplited[0], dtsplited[1], self.Ext)
-	} else {
-		self.NewFilename = fmt.Sprintf("%s-%s-%s%s", prefix, dtsplited[0], dtsplited[1], self.Ext)
+	var buf bytes.Buffer
+	if prefix != "" {
+		buf.WriteString(prefix)
 	}
 
+	buf.WriteString(fmt.Sprintf("%s-%s", dtsplited[0], dtsplited[1]))
+
+	// 处理连拍的情况。连拍时，只会产生一个 Exif 信息（时间是相同的）。
+	if counter > 0 {
+		buf.WriteString(strconv.Itoa(counter))
+	}
+
+	buf.WriteString(self.Ext)
+
+	self.NewFilename = buf.String()
 	self.ArchFolder = string(dtsplited[0][:6])
 	return nil
 }
