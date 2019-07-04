@@ -115,7 +115,7 @@ func (t *Task) parseImage(file string, done chan struct{}) {
 
 	for counter := 0; ; counter++ {
 		//取得新文件名
-		err := photo.GenName(t.prefix, counter)
+		err := photo.UpdateName(t.prefix, counter)
 		if err != nil {
 			done <- FINISH
 			return

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/rwcarlsen/goexif/exif"
 )
@@ -33,33 +34,52 @@ func genNameFromExif(jpeg string) ([]string, error) {
 	return split, nil
 }
 
-// 名字例如：IMG_20151106_212111
+// 处理未知命名格式
+//
+func getNameFromUnknownNamingFormat(filename string) ([]string, error) {
+	ts := time.Now()
+	return []string{filename, ts.Format("20060102150405")}, nil
+}
+
+// 名字例如：img_20151106_212111
 //
 func getNameFromFilename(jpeg string) ([]string, error) {
 	nameStr := filepath.Base(jpeg)
 	name := strings.Split(nameStr, ".")
-	str := strings.ToUpper(name[0])
+	str := strings.ToLower(name[0])
 
 	spSet := []string{"_", "-", " "}
 
-	var dateStr string
-	var timeStr string
+	var datePart string
+	var timePart string
 
+	expected := false
 	for _, sp := range spSet {
 		if strings.Contains(str, sp) {
 			substr := strings.Split(str, sp)
 			size := len(substr)
+			
 			if size == 3 {
-				dateStr = substr[1]
-				timeStr = substr[2]
-			} else {
-				dateStr = substr[0]
-				timeStr = substr[1]
+				datePart = substr[1]
+				timePart = substr[2]
+				expected = true
+				break
 			}
-			break
+
+			if size == 2 {
+				datePart = substr[0]
+				timePart = substr[1]
+				expected = true
+				break
+			}
 		}
 	}
-	return []string{dateStr, timeStr}, nil
+
+	if expected {
+		return []string{datePart, timePart}, nil
+	}
+
+	return getNameFromUnknownNamingFormat(str)
 }
 
 type Photo struct {
@@ -82,7 +102,7 @@ func NewPhoto(file string) *Photo {
 	}
 }
 
-func (p *Photo) GenName(prefix string, counter int) error {
+func (p *Photo) UpdateName(prefix string, counter int) error {
 	splits := []string{}
 	splits, err := genNameFromExif(p.pathWithName)
 	if err != nil {
@@ -104,6 +124,12 @@ func (p *Photo) GenName(prefix string, counter int) error {
 	buf.WriteString(p.Ext)
 
 	p.NewFilename = buf.String()
-	p.ArchFolder = string(splits[0][:6])
+
+	archFolder := "other"
+	if len(splits[0]) > 6 {
+		archFolder = splits[0][:6]
+	}
+
+	p.ArchFolder = archFolder
 	return nil
 }
