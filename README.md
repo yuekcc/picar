@@ -2,12 +2,6 @@
 ------------
 自家用照片管理工具，build with love。
 
-注意：
-
-- 目前只在 Windows 7 64 位上测试过。
--  需要 Go 1.5+ 版本编译，因为使用了 [vendor][4] 特性。
-- 得益于 Go 的功能，理论上也支持 maxOS、*Linux、*BSD、Plan9。
-
 ## 功能
 
 1. 依据 EXIF 信息，按拍照日期时间重命名照片。
@@ -42,7 +36,7 @@ WTFPL，详见 [LICENSE][3] 文件。
 ## 安装
 
 ```
-$ git clone https://git.coding.net/yuekcc/picar.git $GOPATH/src/picar
+$ git clone https://gitee.com/yuekcc/picar.git $GOPATH/src/picar
 $ go build
 ```
 
@@ -56,9 +50,15 @@ $ go build
 - [x] 可以处理连拍的照片
 - [ ] 可以处理视频文件
 
+## 注意
+
+- 在 Windows 10 64 位上测试 OK。
+- 需要 Go 1.12 以上版本，并开启 `go module` 相关配置
+- 理论上支持 Linux、macOS 等（未测试过）。
+
 [1]: http://www.codesnippet.cn/detail/160420132830.html
 [2]: https://github.com/rwcarlsen/goexif
 [3]: https://coding.net/u/yuekcc/p/picar/git/blob/master/LICENSE
 [4]: http://tonybai.com/2015/07/31/understand-go15-vendor/
 [5]: http://www.aardio.com/
-[6]: https://coding.net/u/yuekcc/p/picar/git/tree/master/aardio
+[6]: ./aardio
