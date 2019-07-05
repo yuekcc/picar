@@ -110,7 +110,7 @@ func (t *Task) parseImage(file string, done chan struct{}) {
 
 	log.Println("\t- 正在处理：", file)
 
-	newFilePath := ""
+	newPath := ""
 	photo := NewPhoto(file)
 
 	for counter := 0; ; counter++ {
@@ -123,20 +123,20 @@ func (t *Task) parseImage(file string, done chan struct{}) {
 
 		if t.noArchiving {
 			// 不归档照片
-			newFilePath = filepath.Join(photo.Path, photo.NewFilename)
+			newPath = filepath.Join(photo.Dir, photo.NewFilename)
 		} else {
 			// 归档照片
-			newFilePath = filepath.Join(photo.Path, photo.ArchFolder, photo.NewFilename)
-			err := os.MkdirAll(filepath.Join(photo.Path, photo.ArchFolder), 0777)
+			newPath = filepath.Join(photo.Dir, photo.ArchFolder, photo.NewFilename)
+			err := os.MkdirAll(filepath.Join(photo.Dir, photo.ArchFolder), 0777)
 			if err != nil {
 				panic("create directory failed, " + err.Error())
 			}
 		}
 
-		log.Println("\t- 重命名为：", newFilePath)
+		log.Println("\t- 重命名为：", newPath)
 
 		// 首先检查是否已经储存一样的新文件名的文件
-		found, err := isExists(newFilePath)
+		found, err := isExists(newPath)
 		if err != nil {
 			done <- FINISH
 			return
@@ -147,7 +147,7 @@ func (t *Task) parseImage(file string, done chan struct{}) {
 		}
 
 		// 没有同名文件开始重命名文件
-		err = os.Rename(file, newFilePath)
+		err = os.Rename(file, newPath)
 		if err != nil {
 			done <- FINISH
 			return

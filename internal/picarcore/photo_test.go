@@ -12,7 +12,7 @@ func Test_getNameFromFilename(t *testing.T) {
 	}
 
 	for _, data := range testdata {
-		dt, _ := getNameFromFilename(data)
+		dt, _ := fromFilename(data)
 		t.Log(dt)
 	}
 }

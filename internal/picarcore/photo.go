@@ -12,8 +12,8 @@ import (
 	"github.com/rwcarlsen/goexif/exif"
 )
 
-func genNameFromExif(jpeg string) ([]string, error) {
-	fp, err := os.Open(jpeg)
+func fromExif(path string) ([]string, error) {
+	fp, err := os.Open(path)
 	defer fp.Close()
 
 	if err != nil {
@@ -43,10 +43,8 @@ func getNameFromUnknownNamingFormat(filename string) ([]string, error) {
 
 // 名字例如：img_20151106_212111
 //
-func getNameFromFilename(jpeg string) ([]string, error) {
-	nameStr := filepath.Base(jpeg)
-	name := strings.Split(nameStr, ".")
-	str := strings.ToLower(name[0])
+func fromFilename(name string) ([]string, error) {
+	formatted := strings.ToLower(filepath.Base(name))
 
 	spSet := []string{"_", "-", " "}
 
@@ -55,10 +53,10 @@ func getNameFromFilename(jpeg string) ([]string, error) {
 
 	expected := false
 	for _, sp := range spSet {
-		if strings.Contains(str, sp) {
-			substr := strings.Split(str, sp)
+		if strings.Contains(formatted, sp) {
+			substr := strings.Split(formatted, sp)
 			size := len(substr)
-			
+
 			if size == 3 {
 				datePart = substr[1]
 				timePart = substr[2]
@@ -79,34 +77,31 @@ func getNameFromFilename(jpeg string) ([]string, error) {
 		return []string{datePart, timePart}, nil
 	}
 
-	return getNameFromUnknownNamingFormat(str)
+	return getNameFromUnknownNamingFormat(formatted)
 }
 
 type Photo struct {
-	Name         string // 原来的文件名（不含拓展名）
-	Ext          string // 拓展名
-	Path         string // 原始路径（绝对路径，不含文件名）
-	NewFilename  string // 新文件名（不含拓展名）
-	ArchFolder   string // 归档目录
-	Count        int    // 文件计数（应对连拍，部分机器连拍会产生同一个拍摄时间）
-	pathWithName string // 全路径（包含文件名、拓展名）
+	Dir         string // 当前位置（目录）
+	NewFilename string // 新文件名
+	ArchFolder  string // 归档目录
+	ext         string // 拓展名
+	currentPath string // 当前路径（包含文件名）
 }
 
-func NewPhoto(file string) *Photo {
+func NewPhoto(path string) *Photo {
 	return &Photo{
-		Name:         filepath.Base(file),
-		Ext:          filepath.Ext(file),
-		Path:         filepath.Dir(file),
-		Count:        0,
-		pathWithName: file,
+		ext:         filepath.Ext(path),
+		Dir:         filepath.Dir(path),
+		ArchFolder:  "other",
+		currentPath: path,
 	}
 }
 
 func (p *Photo) UpdateName(prefix string, counter int) error {
 	splits := []string{}
-	splits, err := genNameFromExif(p.pathWithName)
+	splits, err := fromExif(p.currentPath)
 	if err != nil {
-		splits, _ = getNameFromFilename(p.pathWithName)
+		splits, _ = fromFilename(p.currentPath)
 	}
 
 	var buf bytes.Buffer
@@ -121,15 +116,14 @@ func (p *Photo) UpdateName(prefix string, counter int) error {
 		buf.WriteString(strconv.Itoa(counter))
 	}
 
-	buf.WriteString(p.Ext)
+	buf.WriteString(p.ext)
 
 	p.NewFilename = buf.String()
 
-	archFolder := "other"
+	// 如果文件名符合长度，使用文件名的截取部分
 	if len(splits[0]) > 6 {
-		archFolder = splits[0][:6]
+		p.ArchFolder = splits[0][:6]
 	}
 
-	p.ArchFolder = archFolder
 	return nil
 }
