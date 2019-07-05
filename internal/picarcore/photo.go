@@ -34,6 +34,16 @@ func fromExif(path string) ([]string, error) {
 	return split, nil
 }
 
+func parsePhotoFilename(path string) ([]string, error) {
+	splits := []string{}
+	splits, err := fromExif(path)
+	if err != nil {
+		splits, _ = fromFilename(path)
+	}
+
+	return splits, nil
+}
+
 // 处理未知命名格式
 //
 func fromUnknownNamingFormat(filename string) ([]string, error) {
@@ -99,11 +109,12 @@ func NewPhoto(path string) *Photo {
 	}
 }
 
-func (p *Photo) UpdateName(prefix string, counter int) error {
+func (p *Photo) UpdateName(prefix string, counter int, isVideoFile bool) error {
 	splits := []string{}
-	splits, err := fromExif(p.currentPath)
-	if err != nil {
+	if isVideoFile {
 		splits, _ = fromFilename(p.currentPath)
+	} else {
+		splits, _ = parsePhotoFilename(p.currentPath)
 	}
 
 	var buf bytes.Buffer
@@ -122,8 +133,12 @@ func (p *Photo) UpdateName(prefix string, counter int) error {
 
 	p.NewFilename = buf.String()
 
+	if isVideoFile {
+		p.ArchFolder = "video"
+	}
+
 	// 如果文件名符合长度，使用文件名的截取部分
-	if len(splits[0]) > 6 {
+	if len(splits[0]) > 6 && !isVideoFile {
 		p.ArchFolder = splits[0][:6]
 	}
 

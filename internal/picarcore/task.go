@@ -51,12 +51,13 @@ func (t *Task) Run() error {
 	for _, file := range t.files {
 		ext := strings.ToLower(filepath.Ext(file))
 		switch ext {
-		case ".jpg":
+		case JPG:
 			log.Println("\t- 照片: ", file)
 			index++
-			go t.parseImage(file, finish)
-		case ".mp4", ".mov":
+			go t.parse(file, false, finish)
+		case MP4, MOV:
 			log.Println("\t- 影片: ", file)
+			go t.parse(file, true, finish)
 		default:
 			log.Println("\t- 忽略: ", file)
 		}
@@ -99,7 +100,7 @@ func (t *Task) getFileList() (err error) {
 // 如果需要归档照片，则生成新文件名时，加上要放置的目录
 // 然后，将照片重新命名为新文件名
 //
-func (t *Task) parseImage(file string, done chan struct{}) {
+func (t *Task) parse(file string, isVideoFile bool, done chan struct{}) {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Println(err)
@@ -115,7 +116,7 @@ func (t *Task) parseImage(file string, done chan struct{}) {
 
 	for counter := 0; ; counter++ {
 		//取得新文件名
-		err := photo.UpdateName(t.prefix, counter)
+		err := photo.UpdateName(t.prefix, counter, isVideoFile)
 		if err != nil {
 			done <- FINISH
 			return
