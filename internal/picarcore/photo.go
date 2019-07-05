@@ -36,7 +36,7 @@ func fromExif(path string) ([]string, error) {
 
 // 处理未知命名格式
 //
-func getNameFromUnknownNamingFormat(filename string) ([]string, error) {
+func fromUnknownNamingFormat(filename string) ([]string, error) {
 	ts := time.Now()
 	return []string{filename, ts.Format("20060102150405")}, nil
 }
@@ -44,7 +44,9 @@ func getNameFromUnknownNamingFormat(filename string) ([]string, error) {
 // 名字例如：img_20151106_212111
 //
 func fromFilename(name string) ([]string, error) {
-	formatted := strings.ToLower(filepath.Base(name))
+	baseName := filepath.Base(name)
+	splits := strings.Split(baseName, ".")
+	formatted := strings.ToLower(strings.Join(splits[:len(splits)-1], "."))
 
 	spSet := []string{"_", "-", " "}
 
@@ -77,7 +79,7 @@ func fromFilename(name string) ([]string, error) {
 		return []string{datePart, timePart}, nil
 	}
 
-	return getNameFromUnknownNamingFormat(formatted)
+	return fromUnknownNamingFormat(formatted)
 }
 
 type Photo struct {
