@@ -4,7 +4,7 @@
 
 ## 功能
 
-1. 依据 EXIF 信息，按拍照日期时间重命名照片。
+1. 依据 EXIF 信息（如果有 EXIF 信息），按拍照日期时间重命名照片。
 2. 按「年份月份」归档照片。
 
 	比如：
@@ -23,7 +23,7 @@ $ picar 命令 [命令选项] [目录 1] [目录 2] ...
 命令 | 描述
 --------------------|----------------------
 `-prefix [PREFIX]`  | 设置新文件的前缀
-`-noarchiving`      | 只重命名照片文件，不归档
+`-renameonly`      | 只重命名照片文件，不归档
 `-videos`			| 处理视频文件
 `-help`, `-h`       | 显示帮助
 
@@ -45,16 +45,11 @@ $ go build
 * 文件处理相关代码参考了[这里][1]，感谢原作者
 * 原生 EXIF 处理库：[rwcarlsen/goexif][2]
 
-## TODO
+## 注意事项
 
-- [x] 可以处理连拍的照片
-- [ ] 可以处理视频文件
-
-## 注意
-
-- 在 Windows 10 64 位上测试 OK。
-- 需要 Go 1.12 以上版本，并开启 `go module` 相关配置
-- 理论上支持 Linux、macOS 等（未测试过）。
+- 在 Windows 10 64 位上测试 OK
+- 需要 Go 1.16 以上版本
+- 理论上支持 Linux、macOS
 
 [1]: http://www.codesnippet.cn/detail/160420132830.html
 [2]: https://github.com/rwcarlsen/goexif
