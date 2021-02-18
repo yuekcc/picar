@@ -11,9 +11,9 @@ config  = ..fsys.config(
 //不需要序列化的配置名字前请添加下划线
 namespace config {
 	__appName = "gpicar";
-	__appVersion = "1.0.0.01";
-	__appDescription = "a gui for picar";
-	__website = "https://coding.net/u/yuekcc/p/picar/";
+	__appVersion = "1.0.1";
+	__appDescription = "a ui for picar";
+	__website = "https://github.com/yuekcc/picar";
 }
 
 /**intellisense(config)
