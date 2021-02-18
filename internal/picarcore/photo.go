@@ -12,7 +12,7 @@ import (
 	"github.com/rwcarlsen/goexif/exif"
 )
 
-func fromExif(path string) ([]string, error) {
+func genFromExif(path string) ([]string, error) {
 	fp, err := os.Open(path)
 	defer fp.Close()
 
@@ -34,26 +34,16 @@ func fromExif(path string) ([]string, error) {
 	return split, nil
 }
 
-func parsePhotoFilename(path string) ([]string, error) {
-	splits := []string{}
-	splits, err := fromExif(path)
-	if err != nil {
-		splits, _ = fromFilename(path)
-	}
-
-	return splits, nil
-}
-
 // 处理未知命名格式
 //
-func fromUnknownNamingFormat(filename string) ([]string, error) {
+func genFromUnknownNamingFormat(filename string) ([]string, error) {
 	ts := time.Now()
 	return []string{filename, ts.Format("20060102150405")}, nil
 }
 
 // 名字例如：img_20151106_212111
 //
-func fromFilename(name string) ([]string, error) {
+func genFromFilename(name string) ([]string, error) {
 	baseName := filepath.Base(name)
 	splits := strings.Split(baseName, ".")
 	formatted := strings.ToLower(strings.Join(splits[:len(splits)-1], "."))
@@ -89,10 +79,27 @@ func fromFilename(name string) ([]string, error) {
 		return []string{datePart, timePart}, nil
 	}
 
-	return fromUnknownNamingFormat(formatted)
+	return genFromUnknownNamingFormat(formatted)
 }
 
-type Photo struct {
+func genFilename(path string, isVideoFile bool) ([]string, error) {
+	if isVideoFile {
+		splits, _ := genFromFilename(path)
+		return splits, nil
+	}
+
+	splits := []string{}
+	splits, err := genFromExif(path)
+	if err != nil {
+		splits, _ = genFromFilename(path)
+	}
+
+	return splits, nil
+}
+
+// MediaFile 表示一个照片/视频文件
+//
+type MediaFile struct {
 	Dir         string // 当前位置（目录）
 	NewFilename string // 新文件名
 	ArchFolder  string // 归档目录
@@ -100,8 +107,10 @@ type Photo struct {
 	currentPath string // 当前路径（包含文件名）
 }
 
-func NewPhoto(path string) *Photo {
-	return &Photo{
+// NewMediaFile 创建一个 MediaFile 结构
+//
+func NewMediaFile(path string) *MediaFile {
+	return &MediaFile{
 		ext:         filepath.Ext(path),
 		Dir:         filepath.Dir(path),
 		ArchFolder:  "other",
@@ -109,12 +118,12 @@ func NewPhoto(path string) *Photo {
 	}
 }
 
-func (p *Photo) UpdateName(prefix string, counter int, isVideoFile bool) error {
-	splits := []string{}
-	if isVideoFile {
-		splits, _ = fromFilename(p.currentPath)
-	} else {
-		splits, _ = parsePhotoFilename(p.currentPath)
+// SetNewFilename 设置新的文件名
+//
+func (p *MediaFile) SetNewFilename(prefix string, counter int, isVideoFile bool) error {
+	splits, err := genFilename(p.currentPath, isVideoFile)
+	if err != nil {
+		return err
 	}
 
 	var buf bytes.Buffer

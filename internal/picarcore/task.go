@@ -14,29 +14,33 @@ const (
 )
 
 var (
+	// FINISH 表示任务已经结束
 	FINISH = struct{}{}
 )
 
-// 重命名目录任务
+// Task 表示一个重命名任务
 //
 type Task struct {
 	dir         string
 	prefix      string
-	noArchiving bool
+	renameOnly  bool
 	parseVideos bool
 	files       []string
 }
 
-func CreateTask(prefix string, noArchiving bool, videos bool, path string) *Task {
+// CreateTask 创建一个新任务
+//
+func CreateTask(prefix string, renameOnly bool, videos bool, path string) *Task {
 	return &Task{
 		dir:         path,
 		prefix:      prefix,
 		parseVideos: videos,
-		noArchiving: noArchiving,
+		renameOnly:  renameOnly,
 	}
 }
 
-func (t *Task) Run() error {
+// Execute 执行任务
+func (t *Task) Execute() error {
 	log.Println("正在处理文件列表")
 	err := t.getFileList()
 	if err != nil {
@@ -95,15 +99,16 @@ func (t *Task) getFileList() (err error) {
 }
 
 // 重命名（和归档）照片
-// 原理：
-// 如果需要归档照片，则生成新文件名时，加上要放置的目录
-// 然后，将照片重新命名为新文件名
+//
+// 流程：
+// 1. 如果需要归档照片，则生成新文件名时，加上要放置的目录；否则只重命名文件名
+// 2. 将照片重新命名为新文件名
 //
 func (t *Task) parse(file string, isVideoFile bool, done chan struct{}) {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Println(err)
-			done <- FINISH
+			done <- FINISH // 如果出错了，忽略对该文件的处理
 			return
 		}
 	}()
@@ -111,23 +116,23 @@ func (t *Task) parse(file string, isVideoFile bool, done chan struct{}) {
 	log.Println("\t- 正在处理：", file)
 
 	newPath := ""
-	photo := NewPhoto(file)
+	mf := NewMediaFile(file)
 
 	for counter := 0; ; counter++ {
 		//取得新文件名
-		err := photo.UpdateName(t.prefix, counter, isVideoFile)
+		err := mf.SetNewFilename(t.prefix, counter, isVideoFile)
 		if err != nil {
 			done <- FINISH
 			return
 		}
 
-		if t.noArchiving {
-			// 不归档照片
-			newPath = filepath.Join(photo.Dir, photo.NewFilename)
+		if t.renameOnly {
+			// 只修改文件名
+			newPath = filepath.Join(mf.Dir, mf.NewFilename)
 		} else {
 			// 归档照片
-			newPath = filepath.Join(photo.Dir, photo.ArchFolder, photo.NewFilename)
-			err := os.MkdirAll(filepath.Join(photo.Dir, photo.ArchFolder), 0777)
+			newPath = filepath.Join(mf.Dir, mf.ArchFolder, mf.NewFilename)
+			err := os.MkdirAll(filepath.Join(mf.Dir, mf.ArchFolder), 0777)
 			if err != nil {
 				panic("create directory failed, " + err.Error())
 			}

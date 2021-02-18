@@ -4,18 +4,17 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-
 )
 
 type Config struct {
 	ParseVideo   bool
-	NoArchiving  bool
+	RenameOnly   bool
 	Prefix       string
 	PhotoFolders []string
 }
 
 func Run(config Config) {
-	log.Printf("prefix = %v, noArchiving = %v, path = %v", config.Prefix, config.NoArchiving, config.PhotoFolders)
+	log.Printf("prefix = %v, noArchiving = %v, path = %v", config.Prefix, config.RenameOnly, config.PhotoFolders)
 
 	pwd, _ := os.Getwd()
 	dirs := config.PhotoFolders
@@ -31,8 +30,8 @@ func Run(config Config) {
 			targetDir = filepath.Join(pwd, targetDir)
 		}
 
-		task := CreateTask(config.Prefix, config.NoArchiving, config.ParseVideo, targetDir)
-		err := task.Run()
+		task := CreateTask(config.Prefix, config.RenameOnly, config.ParseVideo, targetDir)
+		err := task.Execute()
 		if err != nil {
 			log.Println(err)
 		}

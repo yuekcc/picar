@@ -9,14 +9,14 @@ import (
 )
 
 var (
-	flagPrefix      string
-	flagNoArchiving bool
-	flagParseVideo  bool
+	flagPrefix     string
+	flagRenameOnly bool
+	flagParseVideo bool
 )
 
 func init() {
 	flag.StringVar(&flagPrefix, "prefix", "", "设置文件名的前缀")
-	flag.BoolVar(&flagNoArchiving, "noarchiving", false, "不归档文件")
+	flag.BoolVar(&flagRenameOnly, "renameonly", false, "只重命名文件名")
 	flag.BoolVar(&flagParseVideo, "video", false, "处理视频文件")
 }
 
@@ -35,7 +35,7 @@ func main() {
 
 	config := picarcore.Config{
 		ParseVideo:   flagParseVideo,
-		NoArchiving:  flagNoArchiving,
+		RenameOnly:   flagRenameOnly,
 		Prefix:       flagPrefix,
 		PhotoFolders: flag.Args(),
 	}
