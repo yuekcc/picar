@@ -1,7 +1,6 @@
 package picarcore
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -77,7 +76,7 @@ func (t *Task) getFileList() (err error) {
 
 	log.Println("读取目录：", t.dir)
 
-	items, err := ioutil.ReadDir(t.dir)
+	items, err := os.ReadDir(t.dir)
 	if err != nil {
 		return err
 	}
