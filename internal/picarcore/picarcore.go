@@ -14,7 +14,7 @@ type Config struct {
 }
 
 func Run(config Config) {
-	log.Printf("prefix = %v, noArchiving = %v, path = %v", config.Prefix, config.RenameOnly, config.PhotoFolders)
+	log.Printf("prefix = %v, renameOnly = %v, dirs = %v", config.Prefix, config.RenameOnly, config.PhotoFolders)
 
 	pwd, _ := os.Getwd()
 	dirs := config.PhotoFolders
