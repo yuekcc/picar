@@ -48,7 +48,7 @@ $ go build
 ## 注意事项
 
 - 在 Windows 10 64 位上测试 OK
-- 需要 Go 1.16 以上版本
+- 需要 Go 1.17 以上版本
 - 理论上支持 Linux、macOS
 
 [1]: http://www.codesnippet.cn/detail/160420132830.html

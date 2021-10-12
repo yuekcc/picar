@@ -1,5 +1,5 @@
 package main
 
 const (
-	_VERSION = 21.2
+	VERSION = 21.2
 )

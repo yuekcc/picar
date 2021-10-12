@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"picar/internal/picarcore"
+	"github.com/yuekcc/picar/internal/picarcore"
 )
 
 var (
@@ -25,12 +25,11 @@ func main() {
 
 	if flag.NFlag() == 0 {
 		flag.PrintDefaults()
-		os.Exit(-1)
-		return
+		os.Exit(1)
 	}
 
 	log.Println("picar, a tool for rename and archiving photos.")
-	log.Println("version", _VERSION)
+	log.Println("version", VERSION)
 	log.Println("a tool from yuekcc, build with love.")
 
 	config := picarcore.Config{
