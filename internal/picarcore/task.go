@@ -25,7 +25,6 @@ type Task struct {
 	prefix      string
 	renameOnly  bool
 	parseVideos bool
-	files       []string
 }
 
 // CreateTask 创建一个新任务
@@ -42,60 +41,69 @@ func CreateTask(prefix string, renameOnly bool, videos bool, path string) *Task 
 // Execute 执行任务
 func (t *Task) Execute() error {
 	log.Println("正在处理文件列表")
-	err := t.getFileList()
+	files, err := t.getFileList()
 	if err != nil {
 		return err
 	}
 
-	finish := make(chan struct{})
-
-	index := 0
 	log.Println("过滤照片文件")
-	for _, file := range t.files {
+
+	finish := make(chan struct{})
+	count := 0
+	for i := 0; i < len(files); i++ {
+		file := files[i]
+
+		if file == "" {
+			continue
+		}
+
 		ext := strings.ToLower(filepath.Ext(file))
 		switch ext {
 		case JPG:
 			log.Println("\t- 照片: ", file)
-			index++
+			count++
 			go t.parse(file, false, finish)
 		case MP4, MOV:
 			log.Println("\t- 影片: ", file)
 			go t.parse(file, true, finish)
+			count++
 		default:
 			log.Println("\t- 忽略: ", file)
 		}
 	}
 
-	for i := 0; i < index; i++ {
+	for i := 0; i < count; i++ {
 		<-finish
 	}
 
-	log.Println("一共处理了 ", index, " 个文件")
+	log.Println("一共处理了 ", count, " 个文件")
 	return nil
 }
 
 // 取得文件列表
 //
-func (t *Task) getFileList() (err error) {
-
+func (t *Task) getFileList() ([]string, error) {
 	log.Println("读取目录：", t.dir)
 
 	items, err := os.ReadDir(t.dir)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	for _, item := range items {
+	itemsLen := len(items)
+	result := make([]string, itemsLen)
+	for i := 0; i < itemsLen; i++ {
+		item := items[i]
+
 		// 忽略子目录
 		if item.IsDir() {
 			continue
 		}
 
-		file := filepath.Join(t.dir, item.Name())
-
-		t.files = append(t.files, file)
+		result[i] = filepath.Join(t.dir, item.Name())
 	}
-	return nil
+
+	return result, nil
 }
 
 // 重命名（和归档）照片
@@ -105,13 +113,25 @@ func (t *Task) getFileList() (err error) {
 // 2. 将照片重新命名为新文件名
 //
 func (t *Task) parse(file string, isVideoFile bool, done chan struct{}) {
-	defer func() {
+	onDone := func() {
+		done <- FINISH
+	}
+
+	onError := func(err interface{}) {
+		log.Println(err)
+
+		// 如果出错了，忽略对该文件的处理
+		onDone()
+	}
+
+	onPanic := func() {
 		if err := recover(); err != nil {
-			log.Println(err)
-			done <- FINISH // 如果出错了，忽略对该文件的处理
+			onError(err)
 			return
 		}
-	}()
+	}
+
+	defer onPanic()
 
 	log.Println("\t- 正在处理：", file)
 
@@ -122,7 +142,7 @@ func (t *Task) parse(file string, isVideoFile bool, done chan struct{}) {
 		//取得新文件名
 		err := mf.SetNewFilename(t.prefix, counter, isVideoFile)
 		if err != nil {
-			done <- FINISH
+			onError(err)
 			return
 		}
 
@@ -143,7 +163,7 @@ func (t *Task) parse(file string, isVideoFile bool, done chan struct{}) {
 		// 首先检查是否已经储存一样的新文件名的文件
 		found, err := isExists(newPath)
 		if err != nil {
-			done <- FINISH
+			onError(err)
 			return
 		}
 
@@ -152,11 +172,8 @@ func (t *Task) parse(file string, isVideoFile bool, done chan struct{}) {
 		}
 
 		// 没有同名文件开始重命名文件
-		err = os.Rename(file, newPath)
-		if err != nil {
-			done <- FINISH
-			return
-		}
-
+		os.Rename(file, newPath)
+		onDone()
+		return
 	}
 }
