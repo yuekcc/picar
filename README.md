@@ -15,19 +15,19 @@ picar
 ## 使用
 
 ```
-$ picar 命令 [命令选项] [目录 1] [目录 2] ...
+$ picar [命令行参数] [目录 1] [目录 2] ...
 ```
 
 命令行参数:
 
 命令 | 描述
 --------------------|----------------------
-`-prefix [PREFIX]`  | 设置新文件的前缀
+`-prefix PREFIX`    | 设置新文件的前缀
 `-renameonly`       | 只重命名照片文件，不归档
 `-videos`			| 处理视频文件
 `-help`, `-h`       | 显示帮助
 
-不带 `[目录]` 参数，就会默认处理当前目录。
+未指定 `[目录]` 参数，处理当前目录。
 
 ### License
 
@@ -36,8 +36,9 @@ $ picar 命令 [命令选项] [目录 1] [目录 2] ...
 ## 安装
 
 ```
-$ git clone https://gitee.com/yuekcc/picar.git $GOPATH/src/picar
-$ go build
+$ git clone https://github.com/yuekcc/picar.git
+$ cd picar
+$ go install
 ```
 
 ## 致谢
