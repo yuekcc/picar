@@ -1,5 +1,5 @@
-picar
-------------
+# picar
+
 自家用照片管理工具，build with love ❤
 
 ## 功能
@@ -47,9 +47,6 @@ go install # 需要 Go 1.17 以上版本
 
 * 文件处理相关代码参考了 [这里][1]，感谢原作者
 * 原生 EXIF 处理库：[rwcarlsen/goexif][2]
-
-## 注意事项
-
 
 
 [1]: http://www.codesnippet.cn/detail/160420132830.html
