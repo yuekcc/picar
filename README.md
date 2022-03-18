@@ -1,6 +1,6 @@
 picar
 ------------
-自家用照片管理工具，build with love。
+自家用照片管理工具，build with love ❤
 
 ## 功能
 
